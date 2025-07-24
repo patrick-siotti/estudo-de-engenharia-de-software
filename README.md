@@ -73,7 +73,7 @@ Este é o método mais simples e garante que tudo funcione sem a necessidade de 
 
 ```bash
 # 1. Clone o repositório
-git clone [https://github.com/seu-usuario/projeto_previsao.git](https://github.com/seu-usuario/projeto_previsao.git)
+git clone https://github.com/patrick-siotti/estudo-de-engenharia-de-software.git
 cd projeto_previsao
 
 # 2. Construa a imagem Docker
@@ -89,7 +89,7 @@ Este método é ideal para desenvolvimento e para rodar os testes.
 
 ```bash
 # 1. Clone o repositório
-git clone [https://github.com/seu-usuario/projeto_previsao.git](https://github.com/seu-usuario/projeto_previsao.git)
+git clone https://github.com/patrick-siotti/estudo-de-engenharia-de-software.git
 cd projeto_previsao
 
 # 2. Instale as dependências
