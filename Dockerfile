@@ -1,44 +1,40 @@
 # ---- Estágio 1: O Construtor (Builder) ----
-# Usamos uma imagem oficial do Python. A tag 'slim' é uma versão menor.
-# Damos um "apelido" para este estágio: 'builder'.
-FROM python:3.11-slim as builder
+FROM python:3.13-slim AS builder
 
-# Define o diretório de trabalho dentro do contêiner.
 WORKDIR /app
 
-# Instala o Poetry no ambiente do builder.
-# A flag --no-cache-dir é uma boa prática para manter a imagem menor.
+# Instala o Poetry
 RUN pip install --no-cache-dir poetry
 
-# Copia apenas os arquivos de configuração primeiro.
-# O Docker armazena em cache cada passo. Se estes arquivos não mudarem,
-# o Docker reutiliza o cache do passo seguinte, tornando o build muito mais rápido.
+# Desativa a criação de venvs
+RUN poetry config virtualenvs.create false
+
+# Copia os arquivos de configuração e instala as dependências
 COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-root --without dev
 
-# Instala apenas as dependências de PRODUÇÃO.
-# --no-dev: ignora pytest, mypy, etc.
-# --no-root: não instala o projeto em si, apenas suas dependências.
-RUN poetry install --no-dev --no-root
-
-# Agora, copia todo o nosso código fonte.
-COPY ./src/projeto_previsao ./src/projeto_previsao
+# Copia todo o conteúdo da sua pasta 'src' para o diretório de trabalho do builder
+# Agora, teremos a estrutura /app/projeto_previsao/
+COPY ./src/ .
 
 
 # ---- Estágio 2: A Imagem Final (Final) ----
-# Começamos de novo com uma imagem limpa para manter a imagem final pequena.
-FROM python:3.11-slim as final
+FROM python:3.13-slim AS final
 
+# Define o diretório de trabalho final
 WORKDIR /app
 
-# Copia o ambiente virtual com as dependências já instaladas do estágio 'builder'.
-COPY --from=builder /app/.venv ./.venv
+# Copia as dependências instaladas do estágio 'builder'
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 
-# Copia o nosso código fonte do estágio 'builder'.
-COPY --from=builder /app/src/projeto_previsao ./src/projeto_previsao
+# Copia nosso código fonte do estágio 'builder'
+# A estrutura final será /app/projeto_previsao/
+COPY --from=builder /app/projeto_previsao ./projeto_previsao
 
-# "Ativa" o ambiente virtual adicionando-o ao PATH do sistema no contêiner.
-ENV PATH="/app/.venv/bin:$PATH"
+# --- A CORREÇÃO ESTÁ AQUI ---
+# Adiciona o diretório de trabalho '/app' ao PYTHONPATH.
+# Agora, Python saberá onde encontrar o pacote 'projeto_previsao'.
+ENV PYTHONPATH="/app"
 
-# Define o comando que será executado quando o contêiner iniciar.
-# É o mesmo comando que usamos no terminal!
+# Define o comando que será executado quando o contêiner iniciar
 CMD ["python", "-m", "projeto_previsao"]
