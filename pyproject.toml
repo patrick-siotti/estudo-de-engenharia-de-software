@@ -1,0 +1,25 @@
+[project]
+name = "projeto-previsao"
+version = "0.1.0"
+description = "proeto usado para aprendizado do poetry"
+authors = [
+    {name = "patrick",email = "patrickgsiotti@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+]
+
+[tool.poetry]
+packages = [{include = "projeto_previsao", from = "src"}]
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+mypy = "^1.17.0"
+pytest-mock = "^3.14.1"
+pytest-cov = "^6.2.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

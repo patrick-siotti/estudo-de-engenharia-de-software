@@ -1,0 +1,7 @@
+./main.py
+./install.py
+.mypy_cache
+.pytest_cache
+.vscode
+.coverage
+__pycache__
