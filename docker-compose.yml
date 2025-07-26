@@ -1,0 +1,34 @@
+# A linha 'version: '3.8'' foi removida daqui de cima
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: previsao_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=patrick
+      - POSTGRES_PASSWORD=senhaforte
+      - POSTGRES_DB=previsaodb
+
+  app:
+    container_name: previsao_app
+    build: .
+    command: tail -f /dev/null
+    volumes:
+      # Mapeia o código fonte para live-reload
+      - ./src:/app/src
+      # --- ADICIONE ESTA LINHA ---
+      # Mapeia o manage.py da sua máquina para dentro do contêiner
+      - ./manage.py:/app/manage.py
+    environment:
+      - DB_USER=patrick
+      - DB_PASSWORD=senhaforte
+      - DB_NAME=previsaodb
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
