@@ -1,6 +1,9 @@
 from typing import *
 from dataclasses import dataclass
 
+from .inicialize_db import *
+from .database.models import PrevisaoSalva
+
 class DadosBrutoPrevisao(TypedDict):
     cidade: str
     temperatura_celcius: int
@@ -18,7 +21,17 @@ class Previsao():
     umidade_relativa: int
     condicao_ceu: str
     vento_kmh: int
-    
+
+def salvar_previsao(previsao: Previsao) -> None:
+    previsao_salva = PrevisaoSalva.objects.create(
+        cidade=previsao.cidade,
+        temperatura=previsao.temperatura_celcius,
+        condicao=previsao.condicao_ceu,
+        umidade=previsao.umidade_relativa,
+        vento=previsao.vento_kmh
+    )
+    print(f'[ SALVO ] {previsao_salva}')
+
 @dataclass(frozen=True)
 class Previsao_bruta():
     dados: DadosBrutoPrevisao
@@ -34,6 +47,7 @@ class Previsao_bruta():
             condicao_ceu = self.dados['condicao_ceu'],
             vento_kmh = self.dados['vento_kmh']
         )
+        salvar_previsao(previsao)
         
         return previsao
     
